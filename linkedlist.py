@@ -1,56 +1,81 @@
-import sys
+''' Linked List implementation in Python 
+    Indie Cowan 2023 '''
 
-class Node:
-    def __init__(self, value, child : 'Node' = None):
+class _Node:
+    def __init__(self, value, next : '_Node' = None):
         self.value = value
-        self.child = child
+        self.next = next
+    
+    def __repr__(self) -> str:
+        return "_Node: " + str(self.value)
 
 
 class LinkedList:
     def __init__(self, head = None):
-        self.head = Node(head)
+        if head is None:
+            self.head = None
+            self.tail = None
+            self.len = 0
+        else:
+            self.head = _Node(head)
+            self.tail = self.head
+            self.len = 1
+
+    def __len__(self):
+        return self.len
+    
+    def __repr__(self) -> str:
+        return "LinkedList: " + repr(self.head)
 
     def append(self, value):
         if self.head is None:
-            self.head = Node(value)
-        current = self.head
-        while current.child != None:
-            current = current.child
-        current.child = Node(value)
+            self.head = _Node(value)
+            self.tail = self.head
+        else:
+            self.tail.next = _Node(value)
+            self.tail = self.tail.next
+
+        self.len += 1
 
     def insert(self, value, i):
         if self.head is None:
-            print("ERROR in insert: i is out of bound for your linked list.")
-            return -1
-        current = self.head
-        curr_i = 0
-        while current.child != None and curr_i < i - 1:
-            current = current.child
-        if current.child is None:
-            print("ERROR in insert: i is out of bound for your linked list.")
-            return -1
+            if i == 0:
+                self.head = _Node(value)
+                self.tail = self.head
+                self.len += 1
+            else:
+                raise IndexError("i is out of bound for your linked list.")
         else:
-            next = current.child
-            current.child = Node(value)
-            current.child.child = next
-            return 0
+            current = self.head
+            curr_i = 0
+            while current.next != None and curr_i < i - 1:
+                current = current.next
+            if current.next is None:
+                if i == self.len:
+                    self.append(value)
+                else:
+                    raise IndexError("i is out of bound for your linked list.")
+            else:
+                next = current.next
+                current.next = _Node(value)
+                current.next.next = next
+                self.len += 1
 
     # index or -1 if not found
-    def first_index(self, tofind) -> int:
+    def find_first_index(self, tofind) -> int:
         current = self.head
         i = 0
-        while current != None and current != tofind:
-            current = current.child
+        while current is not None and current.value != tofind:
+            current = current.next
             i += 1
-        return i if current != None else -1
+        return i if current is not None else -1
     
     def print_list(self):
-        sys.stdout.flush()
         print("in print list")
         current = self.head
-        while current != None:
-            print(current.value, " ")
-            current = current.child
+        while current is not None:
+            print(current.value, end=" ")
+            current = current.next
     
 
 
