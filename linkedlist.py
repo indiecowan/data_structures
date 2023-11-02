@@ -26,6 +26,15 @@ class LinkedList:
     
     def __repr__(self) -> str:
         return "LinkedList: " + repr(self.head)
+    
+    '''_get_node_at
+        - returns (reference to) Node in LL at index i'''
+    def _get_node_at(self, i) -> _Node:
+        curr_i = 0
+        curr_node = self.head
+        while curr_node is not None and curr_i < i:
+            curr_node = curr_node.next
+        return curr_node
 
     def append(self, value):
         if self.head is None:
@@ -60,6 +69,29 @@ class LinkedList:
                 current.next = _Node(value)
                 current.next.next = next
                 self.len += 1
+
+    '''remove
+        - removes element at index i from linked list '''
+    def remove(self, i):
+        '''cases:
+        removing head / tail node and need to update these values
+        when head + tail are same node and that node is being removed
+        removing node in the middle'''
+        # check i is within bounds
+        if i >= self.len:
+            raise IndexError("remove: index i is out of range for linked list")
+        # check if it is head node
+        if i == 0:
+            self.head = self.head.next
+        else:
+            to_delete_parent = self._get_node_at(i - 1)
+            to_delete = to_delete_parent.next
+            if to_delete.next is None:
+                self.tail = to_delete_parent
+            else:
+                to_delete_parent.next = to_delete.next
+        self.len -= 1
+
 
     # index or -1 if not found
     def find_first_index(self, tofind) -> int:
