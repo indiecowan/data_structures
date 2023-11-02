@@ -64,7 +64,7 @@ class LinkedList:
         return value
     
     def __getitem__(self, index):
-        '''returns item at index, takes negative indicies
+        '''returns item/value at index, takes negative indicies
             - does not support slicing yet '''
         if index < 0:
             index = self.len + index
@@ -179,14 +179,12 @@ class LinkedList:
     def get_at(self, index):
         '''gets value at specified index '''
         # check for negative indexing
-        if index < 0:
-            index = self.len + index
-        
-        node = self._get_node_at(index)
-        if node is None:
-            return None
-        else:
-            return self._get_node_at(index).value
+        return self.__getitem__(index)
+    
+    def set_at(self, index):
+        '''gets value at specified index '''
+        # check for negative indexing
+        return self.__getitem__(index)
 
     def find_first_index(self, tofind) -> int:
         '''returns index of first occurance or -1 if not found'''
@@ -197,6 +195,4 @@ class LinkedList:
             i += 1
         return -1 if current is None else i
     
-
-
     
