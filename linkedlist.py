@@ -11,7 +11,7 @@ class _Node:
     
     def __repr__(self) -> str:
         return "_Node: " + str(self.value)
-
+    
 
 class LinkedList:
     '''singly linked list
@@ -38,6 +38,18 @@ class LinkedList:
         '''returns debugging representation string '''
         return "LinkedList:\nhead: " + repr(self.head) + "tail: " + repr(self.tail) + "len: " + str(self.len)
     
+    def __str__(self):
+        '''returns string representation of list'''
+        result = ""
+        current = self.head
+        result += "["
+        while current is not None and current.next is not None:
+            result += str(current.value) + ", "
+            current = current.next
+        result += current.value + "]"
+
+        return result
+    
     def __iter__(self):
         '''returns iterable for list (self)'''
         self._iter_node = self.head
@@ -52,7 +64,8 @@ class LinkedList:
         return value
     
     def __getitem__(self, index):
-        '''returns item at index, takes negative indicies'''
+        '''returns item at index, takes negative indicies
+            - does not support slicing yet '''
         if index < 0:
             index = self.len + index
         if index < 0 or index >= self.len:
@@ -60,20 +73,27 @@ class LinkedList:
         return self._get_node_at(index).value
 
     def __setitem__(self, index, value):
-        '''sets value at index, takes negative indicies'''
+        '''sets value at index, takes negative indicies
+            - does not support slicing yet '''
         if index < 0:
             index = self.len + index
         if index < 0 or index >= self.len:
             raise IndexError("index out of bounds for LinkedList")
         node = self._get_node_at(index)
         node.value = value
+
+    def __contains__(self, tofind):
+        '''returns True if value is found in LL False otherwise'''
+        return self.find_first_index(tofind) != -1
     
-    def _get_node_at(self, i) -> _Node:
-        '''returns (reference to) Node in LL at index i or None if it's out of range '''
-        curr_i = 0
+    def _get_node_at(self, index) -> _Node:
+        '''returns (reference to) Node in LL at index i or None if it's out of range
+            - does not take negative indicies'''
+        i = 0
         curr_node = self.head
-        while curr_node is not None and curr_i < i:
+        while curr_node is not None and i < index:
             curr_node = curr_node.next
+            i += 1
         return curr_node
     
     def is_empty(self):
@@ -89,35 +109,43 @@ class LinkedList:
             self.tail = self.tail.next
         self.len += 1
 
-    def insert(self, value, i):
+    def insert(self, value, index):
         '''adds element into list at given index, pushing other elements to the side (no overwriting)
         - will insert at the end of list (past current len)'''
+        # check for negative indexing
+        if index < 0:
+            index = self.len + index
+
         new_node = _Node(value)
         # inserting at front
-        if i == 0:
+        if index == 0:
             new_node.next = self.head
             self.head = new_node
-        elif i == self.len:
+        elif index == self.len:
             self.tail.next = new_node
             self.tail = self.tail.next
         else:
-            prev_node = self._get_node_at(i - 1)
+            prev_node = self._get_node_at(index - 1)
             if prev_node is None:
                 raise IndexError("insert: index i is out of range for linked list")
             new_node.next = prev_node.next
             prev_node.next = new_node
         self.len += 1
 
-    def remove(self, i):
+    def remove(self, index):
         '''removes element at index i from linked list '''
+        # check for negative indexing
+        if index < 0:
+            index = self.len + index
+
         # check i is within bounds
-        if i >= self.len:
+        if index >= self.len:
             raise IndexError("remove: index i is out of range for linked list")
         # check if it is head node
-        if i == 0:
+        if index == 0:
             self.head = self.head.next
         else:
-            to_delete_parent = self._get_node_at(i - 1)
+            to_delete_parent = self._get_node_at(index - 1)
             to_delete = to_delete_parent.next
             if to_delete.next is None:
                 self.tail = to_delete_parent
@@ -133,9 +161,6 @@ class LinkedList:
 
     def pop(self):
         '''removes and returns last value'''
-        # cases
-        # empty
-        # head = tail
         if self.is_empty():
             return None
         elif self.len == 1:
@@ -147,11 +172,16 @@ class LinkedList:
         else:
             value = self.tail.value
             self.tail = self._get_node_at(self.len - 2)
+            self.tail.next = None
             self.len -= 1
             return value
 
     def get_at(self, index):
         '''gets value at specified index '''
+        # check for negative indexing
+        if index < 0:
+            index = self.len + index
+        
         node = self._get_node_at(index)
         if node is None:
             return None
@@ -166,18 +196,6 @@ class LinkedList:
             current = current.next
             i += 1
         return -1 if current is None else i
-    
-    def contains(self, tofind):
-        '''returns True if value is found in LL False otherwise'''
-        return self.find_first_index(tofind) != -1
-    
-    def print_list(self):
-        '''prints list to stdout '''
-        current = self.head
-        while current is not None:
-            print(current.value, end=" ")
-            current = current.next
-        print()
     
 
 
