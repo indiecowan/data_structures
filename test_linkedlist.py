@@ -81,7 +81,14 @@ class TestLinkedList(unittest.TestCase):
         self.assertEqual(self.list.len, og_len - 1)
 
         # test pop's len handling
-        
+        self.populate_list(2)
+        # start w list 1, 2
+        # not last element in list
+        self.list.pop()
+        self.assertEqual(len(self.list), 1)
+        # last element in list
+        self.list.pop()
+        self.assertEqual(len(self.list), 0)
 
 
 
