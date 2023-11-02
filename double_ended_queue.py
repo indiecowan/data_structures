@@ -8,3 +8,6 @@ class DEQ:
 
     def push(self, value):
         self.queue.insert(0)
+
+    def pop(self):
+        self.queue.

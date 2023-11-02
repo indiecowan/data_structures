@@ -2,6 +2,9 @@
     Indie Cowan 2023 '''
 
 class _Node:
+    '''to be used by LinkedList
+        - fields: value, next
+        - methods: __init__, __repr__ '''
     def __init__(self, value, next : '_Node' = None):
         self.value = value
         self.next = next
@@ -11,7 +14,13 @@ class _Node:
 
 
 class LinkedList:
+    '''singly linked list
+        - fields: head, tail, len
+        - methods: append, insert, remove, get_at, find_first_index, print_list '''
     def __init__(self, head = None):
+        '''initialized linked list
+            - initializes head, tail and len
+            - handles head value or no head value '''
         if head is None:
             self.head = None
             self.tail = None
@@ -22,61 +31,85 @@ class LinkedList:
             self.len = 1
 
     def __len__(self):
+        '''returns length of linked list '''
         return self.len
     
     def __repr__(self) -> str:
-        return "LinkedList: " + repr(self.head)
+        '''returns debugging representation string '''
+        return "LinkedList:\nhead: " + repr(self.head) + "tail: " + repr(self.tail) + "len: " + str(self.len)
     
-    '''_get_node_at
-        - returns (reference to) Node in LL at index i'''
+    def __iter__(self):
+        '''returns iterable for list (self)'''
+        self._iter_node = self.head
+        return self
+    
+    def __next__(self):
+        '''returns next item in iterable (self)'''
+        if self._iter_node is None:
+            raise StopIteration
+        value = self._iter_node.value
+        self._iter_node = self._iter_node.next
+        return value
+    
+    def __getitem__(self, index):
+        '''returns item at index, takes negative indicies'''
+        if index < 0:
+            index = self.len + index
+        if index < 0 or index >= self.len:
+            raise IndexError("index out of bounds for LinkedList")
+        return self._get_node_at(index).value
+
+    def __setitem__(self, index, value):
+        '''sets value at index, takes negative indicies'''
+        if index < 0:
+            index = self.len + index
+        if index < 0 or index >= self.len:
+            raise IndexError("index out of bounds for LinkedList")
+        node = self._get_node_at(index)
+        node.value = value
+    
     def _get_node_at(self, i) -> _Node:
+        '''returns (reference to) Node in LL at index i or None if it's out of range '''
         curr_i = 0
         curr_node = self.head
         while curr_node is not None and curr_i < i:
             curr_node = curr_node.next
         return curr_node
+    
+    def is_empty(self):
+        return self.head is None
 
     def append(self, value):
+        '''adds element to end of list '''
         if self.head is None:
             self.head = _Node(value)
             self.tail = self.head
         else:
             self.tail.next = _Node(value)
             self.tail = self.tail.next
-
         self.len += 1
 
     def insert(self, value, i):
-        if self.head is None:
-            if i == 0:
-                self.head = _Node(value)
-                self.tail = self.head
-                self.len += 1
-            else:
-                raise IndexError("i is out of bound for your linked list.")
+        '''adds element into list at given index, pushing other elements to the side (no overwriting)
+        - will insert at the end of list (past current len)'''
+        new_node = _Node(value)
+        # inserting at front
+        if i == 0:
+            new_node.next = self.head
+            self.head = new_node
+        elif i == self.len:
+            self.tail.next = new_node
+            self.tail = self.tail.next
         else:
-            current = self.head
-            curr_i = 0
-            while current.next != None and curr_i < i - 1:
-                current = current.next
-            if current.next is None:
-                if i == self.len:
-                    self.append(value)
-                else:
-                    raise IndexError("i is out of bound for your linked list.")
-            else:
-                next = current.next
-                current.next = _Node(value)
-                current.next.next = next
-                self.len += 1
+            prev_node = self._get_node_at(i - 1)
+            if prev_node is None:
+                raise IndexError("insert: index i is out of range for linked list")
+            new_node.next = prev_node.next
+            prev_node.next = new_node
+        self.len += 1
 
-    '''remove
-        - removes element at index i from linked list '''
     def remove(self, i):
-        '''cases:
-        removing head / tail node and need to update these values
-        when head + tail are same node and that node is being removed
-        removing node in the middle'''
+        '''removes element at index i from linked list '''
         # check i is within bounds
         if i >= self.len:
             raise IndexError("remove: index i is out of range for linked list")
@@ -92,22 +125,59 @@ class LinkedList:
                 to_delete_parent.next = to_delete.next
         self.len -= 1
 
+    def clear(self):
+        '''empties the list'''
+        self.head = None
+        self.tail = None
+        self.len = 0
 
-    # index or -1 if not found
+    def pop(self):
+        '''removes and returns last value'''
+        # cases
+        # empty
+        # head = tail
+        if self.is_empty():
+            return None
+        elif self.len == 1:
+            value = self.head.value
+            self.head = None
+            self.tail = None
+            self.len -= 1
+            return value
+        else:
+            value = self.tail.value
+            self.tail = self._get_node_at(self.len - 2)
+            self.len -= 1
+            return value
+
+    def get_at(self, index):
+        '''gets value at specified index '''
+        node = self._get_node_at(index)
+        if node is None:
+            return None
+        else:
+            return self._get_node_at(index).value
+
     def find_first_index(self, tofind) -> int:
+        '''returns index of first occurance or -1 if not found'''
         current = self.head
         i = 0
         while current is not None and current.value != tofind:
             current = current.next
             i += 1
-        return i if current is not None else -1
+        return -1 if current is None else i
+    
+    def contains(self, tofind):
+        '''returns True if value is found in LL False otherwise'''
+        return self.find_first_index(tofind) != -1
     
     def print_list(self):
-        print("in print list")
+        '''prints list to stdout '''
         current = self.head
         while current is not None:
             print(current.value, end=" ")
             current = current.next
+        print()
     
 
 
