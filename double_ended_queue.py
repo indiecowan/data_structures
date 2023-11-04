@@ -1,4 +1,4 @@
-''' Double ended queue implementation using linked list 
+''' UNFINISHED Double ended queue implementation using linked list 
     Indie Cowan 2023 '''
 from linkedlist import LinkedList
 

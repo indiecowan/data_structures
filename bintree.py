@@ -1,3 +1,6 @@
+''' UNFINISHED Binary Tree implementation
+    Indie Cowan 2023 '''
+
 class Node:
     # sets value and parent values, creates rightc and leftc fields + initializes to None
     def __init__(self, value) -> None:
