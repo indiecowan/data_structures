@@ -7,44 +7,64 @@ dictionary as well with counts?
 '''
 
 def solution(a, m, k):
-    # optimize by including all arrays containing winners after winners found
-    # print("a:", a)
-    # print("m:", m)
-    # print("k:", k)
-    result = 0
-    complement_queue = deque() # contains all complements for elements m - 1 before i in order
-    complement_counts = {} # contains counts for all complements for elements m - 1 before i
+    count = 0
+    last = [-m, -m]
+    num_dict = {}
 
-    # set up complement elements for first subset
-    for i in range(m - 1):
-        complement = k-a[i]
-        complement_queue.append(complement)
-        complement_counts[complement] = complement_counts.get(complement, 0) + 1
+    for i in range(len(a)):
+        complement = k - a[i]
+        if complement in num_dict:
+            if i - num_dict[complement] < m:
+                last = [num_dict[complement], i]
 
-    for i in range(m - 1, len(a)):
-        new_value = a[i]
-        print("i:", i, "    new_value:", new_value)
-        if new_value in complement_counts:
-            print("RESULT++")
-            result += 1
+        if m - 1 <= i: # dont do if not at end of group that's m long
+            if i - last[0] < m:
+                count += 1
+
+        num_dict[a[i]] = i
+
+    return count
+
+
+# def solution(a, m, k):
+#     # optimize by including all arrays containing winners after winners found
+#     # print("a:", a)
+#     # print("m:", m)
+#     # print("k:", k)
+#     result = 0
+#     complement_queue = deque() # contains all complements for elements m - 1 before i in order
+#     complement_counts = {} # contains counts for all complements for elements m - 1 before i
+
+#     # set up complement elements for first subset
+#     for i in range(m - 1):
+#         complement = k-a[i]
+#         complement_queue.append(complement)
+#         complement_counts[complement] = complement_counts.get(complement, 0) + 1
+
+#     for i in range(m - 1, len(a)):
+#         new_value = a[i]
+#         print("i:", i, "    new_value:", new_value)
+#         if new_value in complement_counts:
+#             print("RESULT++")
+#             result += 1
         
-        # ready for next set
-        # remove old info
-        # remove from queue
-        oldest_complement = complement_queue.popleft()
+#         # ready for next set
+#         # remove old info
+#         # remove from queue
+#         oldest_complement = complement_queue.popleft()
 
-        # remove from set / dict if needed or decrement dict
-        if complement_counts[oldest_complement] == 1:
-            del complement_counts[oldest_complement]
-        else:
-            complement_counts[oldest_complement] = complement_counts[oldest_complement] - 1
+#         # remove from set / dict if needed or decrement dict
+#         if complement_counts[oldest_complement] == 1:
+#             del complement_counts[oldest_complement]
+#         else:
+#             complement_counts[oldest_complement] = complement_counts[oldest_complement] - 1
 
-        # add new info
-        new_compliment = k - a[i]
-        complement_queue.append(new_compliment)
-        complement_counts[new_compliment] = complement_counts.get(new_compliment, 0) + 1
+#         # add new info
+#         new_compliment = k - a[i]
+#         complement_queue.append(new_compliment)
+#         complement_counts[new_compliment] = complement_counts.get(new_compliment, 0) + 1
                 
-    return result
+#     return result
 
 # def solution(a, m, k):
 #     # optimize by including all arrays containing winners after winners found
